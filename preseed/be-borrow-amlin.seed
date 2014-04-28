@@ -1,0 +1,154 @@
+########################################################################
+#### Custom Preseed Amlin Europe using Ubiquity
+### By Kelly Crabbé for Amlin Europe
+### Tested on Ubuntu Precise Pangolin 12.04 LTS
+### To be used for end-user installs
+
+####################################################################
+# General
+####################################################################
+
+# Once installation is complete, automatically power off.
+# Because the OEM mode is active; user still has to click OK once
+d-i finish-install/reboot_in_progress note
+d-i debian-installer/exit/poweroff boolean true
+d-i ubiquity/summary note
+ubiquity ubiquity/reboot boolean true
+ubiquity ubiquity/poweroff boolean true
+
+# Automatically download and install stable updates?
+# This should auto-fix OpenSSL
+unattended-upgrades unattended-upgrades/enable_auto_updates boolean true
+
+### OEM-Config
+d-i oem-config/enable boolean false # disabled
+d-i oem-config/remove boolean true
+d-i oem-config/remove_extras boolean false
+
+
+####################################################################
+# Networking
+####################################################################
+
+# Network Configuration
+d-i netcfg/enable boolean true
+d-i netcfg/choose_interface select auto
+d-i netcfg/disable_dhcp boolean false
+
+
+####################################################################
+# Installation Sources and package selection
+####################################################################
+
+# Configure the sources.list - open ALL registers!
+d-i apt-setup/multiverse boolean true
+d-i apt-setup/restricted boolean true
+d-i apt-setup/universe boolean true
+d-i apt-setup/partner boolean true
+d-i apt-setup/extras boolean true
+d-i apt-setup/non-free boolean true
+d-i apt-setup/contrib boolean true
+
+
+####################################################################
+# Disk Partitioning / Boot loader
+####################################################################
+
+### Disk Partitioning ###
+
+# Configure auto partitioner
+ubiquity partman-auto/init_automatically_partition select Guided - use entire disk
+ubiquity partman-auto/disk string /dev/sda
+ubiquity partman-auto/method string regular
+ubiquity partman-auto/choose_recipe select All files in one partition (recommended for new users)
+ubiquity partman/confirm_write_new_label boolean true
+ubiquity partman/choose_partition select Finish partitioning and write changes to disk
+ubiquity partman/confirm boolean  true
+
+### Boot loader ###
+
+# This one makes grub-installer install to the MBR even if it finds some other OS
+d-i grub-installer/with_other_os boolean true
+d-i grub-installer/only_debian boolean true
+d-i grub-installer/bootdev string /dev/sda
+
+
+####################################################################
+# Localizations / Timezone
+####################################################################
+
+### Keyboard selection for the installer ###
+d-i keyboard-configuration/layoutcode string be
+d-i keyboard-configuration/variant select Belgian
+
+# Disable automatic (interactive) keymap detection.
+d-i console-setup/ask_detect boolean false
+
+### Locale ###
+d-i debian-installer/language string en
+d-i debian-installer/country string BE
+d-i debian-installer/locale string en_GB.UTF-8
+# Optionally specify additional locales to be generated
+# Currently they are built in into the UCK file.
+#d-i localechooser/supported-locales en_US.UTF-8, nl_NL.UTF-8, nl_BE.UTF-8, fr_BE.UTF-8
+
+### Ensuring a nice KB experience for once ###
+keyboard-configuration keyboard-configuration/unsupported_layout boolean true
+keyboard-configuration keyboard-configuration/store_defaults_in_debconf_db boolean true
+
+### Timezone ###
+d-i time/zone select Europe/Brussels
+d-i clock-setup/utc boolean true
+d-i clock-setup/ntp boolean true
+
+### Installing some languages YEAH
+#d-i oem-config/install-language-support boolean true
+#d-i ubiquity/only-show-installable-languages boolean true
+#d-i pkgsel/language-packs multiselect nl, fr, en
+
+
+####################################################################
+# User Creation
+####################################################################
+
+# Root User
+d-i passwd/root-login boolean false
+
+# Mortal User
+# Hardcoded
+d-i passwd/user-fullname string AEUbuntu
+d-i passwd/username string aeubuntu
+d-i passwd/user-password password buntu
+d-i passwd/user-password-again password buntu
+d-i passwd/auto-login boolean true
+d-i user-setup/allow-password-weak boolean true
+
+
+####################################################################
+# Misc. like running scripts post install
+# Please let this work!
+####################################################################
+
+# Console Font
+console-setup console-setup/fontface47 select Terminus
+
+#skip the screens not required
+ubiquity localechooser/translation/none-yet note
+ubiquity localechooser/translation/no-select note
+
+d-i pkgsel/upgrade select none
+
+# And now we REALLY run with it!!
+# Be advised, ONE late_command only!
+#d-i preseed/late_command string in-target apt-get remove -y ubuntuone-installer; \
+#in-target apt-get install -y openssl clamav clamtk adobe-flashplugin vmware-view-client mousepad
+#in-target wget http://bit.ly/vpnzip /root/vpn.zip && unzip /root/vpn.zip; \
+#in-target chmod +x /root/vpn/vpn_install.sh; \
+#in-target sh /root/vpn/vpn_install.sh; \
+#in-target wget http://bit.ly/precise-pre-oem && chmod 777 precise-pre-oem; \
+#in-target sh precise-pre-oem
+
+# run this command after the install
+# /target is the newly-installed system
+# oem-config-prepare sets the first run wizard for next login
+# ubiquity ubiquity/success_command string chroot /target oem-config-prepare
