@@ -22,8 +22,6 @@ unattended-upgrades unattended-upgrades/enable_auto_updates boolean true
 
 ### OEM-Config
 d-i oem-config/enable boolean false # disabled
-d-i oem-config/remove boolean true
-d-i oem-config/remove_extras boolean false
 
 
 ####################################################################
@@ -78,15 +76,15 @@ d-i grub-installer/bootdev string /dev/sda
 ####################################################################
 
 ### Keyboard selection for the installer ###
-d-i keyboard-configuration/layoutcode string be
-d-i keyboard-configuration/variant select Belgian
+d-i keyboard-configuration/layoutcode string us
+d-i keyboard-configuration/variantcode string us
 
 # Disable automatic (interactive) keymap detection.
 d-i console-setup/ask_detect boolean false
 
 ### Locale ###
 d-i debian-installer/language string en
-d-i debian-installer/country string BE
+d-i debian-installer/country string NL
 d-i debian-installer/locale string en_GB.UTF-8
 # Optionally specify additional locales to be generated
 # Currently they are built in into the UCK file.
@@ -97,7 +95,7 @@ keyboard-configuration keyboard-configuration/unsupported_layout boolean true
 keyboard-configuration keyboard-configuration/store_defaults_in_debconf_db boolean true
 
 ### Timezone ###
-d-i time/zone select Europe/Brussels
+d-i time/zone select Europe/Amsterdam
 d-i clock-setup/utc boolean true
 d-i clock-setup/ntp boolean true
 
