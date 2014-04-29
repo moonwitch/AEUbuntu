@@ -100,6 +100,7 @@ d-i clock-setup/utc boolean true
 d-i clock-setup/ntp boolean true
 
 ### Installing some languages YEAH
+d-i pkgsel/ignore-incomplete-language-support boolean true
 #d-i oem-config/install-language-support boolean true
 #d-i ubiquity/only-show-installable-languages boolean true
 #d-i pkgsel/language-packs multiselect nl, fr, en
